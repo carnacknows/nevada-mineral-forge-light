@@ -1,5 +1,5 @@
 streamlit
-crewai>=0.100
+crewai
 crewai-tools
 pandas
 folium
