@@ -5,7 +5,7 @@ from streamlit_folium import st_folium
 st.set_page_config(page_title="Nevada Mineral Forge — Light", page_icon="⛏️", layout="wide")
 
 st.title("🚀 Nevada Data Forge (Light Mode)")
-st.markdown("**Public-data only** AI-powered mineral prospectivity reports — Clayton Valley Lithium MVP")
+st.markdown("**Public-data only** mineral prospectivity reports — Clayton Valley Lithium MVP")
 
 with st.sidebar:
     st.header("Target Area")
@@ -15,74 +15,90 @@ with st.sidebar:
     max_lon = st.number_input("Max Longitude", value=-117.5, format="%.2f")
     mineral = st.selectbox("Primary Mineral Target", ["Lithium", "Copper", "Gold"], index=0)
 
-    st.caption("Light mode uses public USGS/NBMG data. Full agent factory coming soon.")
+    st.caption("Light mode uses public USGS/NBMG data. Full agent + AVIRIS version coming soon.")
+
+# Initialize session state for persistent report
+if "report" not in st.session_state:
+    st.session_state.report = None
+if "bbox" not in st.session_state:
+    st.session_state.bbox = None
+if "mineral" not in st.session_state:
+    st.session_state.mineral = None
 
 if st.button("🔨 Generate Prospectivity Report", type="primary"):
-    with st.spinner("Generating report..."):
-        # Realistic mock report for Clayton Valley Lithium
+    with st.spinner("Generating report for Clayton Valley area..."):
+        bbox_str = f"{min_lon} to {max_lon}°E, {min_lat} to {max_lat}°N"
+        
         report = f"""
-# Nevada Lithium Prospectivity Report — Clayton Valley Target
+# Nevada {mineral} Prospectivity Report — Clayton Valley Target
 
 **Generated:** March 2026  
 **Target Area:** Clayton Valley / Silver Peak, Esmeralda County, Nevada  
-**Primary Mineral:** {mineral}  
-**BBox:** {min_lon} to {max_lon}°E, {min_lat} to {max_lat}°N  
+**BBox:** {bbox_str}  
+**Primary Mineral:** {mineral}
 
 ## Executive Summary
-Clayton Valley is one of the highest-prospectivity lithium targets in the United States. It hosts North America’s only current lithium production (Albemarle’s Silver Peak brine operation) and multiple advanced clay projects nearby.
+Clayton Valley remains one of the highest-prospectivity lithium targets in the United States. It hosts North America’s only current lithium production (Albemarle’s Silver Peak brine operation) and multiple advanced clay/brine projects nearby.
 
 **Overall Prospectivity Score: 84/100 (High)**  
-Strong alignment with known lacustrine sediments, hyperspectral alteration signatures, and active claims density.
+Strong alignment with known lacustrine sediments, alteration zones, and active claims.
 
 ## Geology Overview
-- Closed basin in the Basin and Range province with lithium-rich Tertiary playa sediments (Esmeralda Formation).
-- Lithium occurs in both brine aquifers and hectorite/smectite clays derived from altered volcanic ash.
-- Structural controls from nearby faults and geothermal activity concentrate mineralization.
+- Closed basin in the Basin and Range with lithium-rich Tertiary playa sediments.
+- Lithium occurs in both brine aquifers and hectorite/smectite clays.
+- Structural and geothermal influences help concentrate mineralization.
 
 ## Claims & Land Intelligence
-High density of lithium-focused placer claims. Mix of patented ground near existing operations and BLM-managed land with standard exploration notices. Moderate competition but opportunities for new targets remain.
+High density of lithium-focused claims. Mix of patented ground near existing operations and open BLM land. Moderate competition but good opportunities for new targeting.
 
 ## Prospectivity Model
-- **Strengths**: Known production precedent, recent Earth MRI coverage, spectral indicators consistent with lithium clays.
-- **Opportunities**: Untapped extensions of clay and brine resources.
-- **Risks**: Claims competition, water use / basin hydrology, typical early-stage grade uncertainty (±30%).
+- **Strengths**: Production precedent, Earth MRI coverage, favorable spectral indicators.
+- **Opportunities**: Extensions of known clay and brine resources.
+- **Risks**: Claims competition, water/basin hydrology issues, typical exploration uncertainty.
 
 **Top Recommended Targets**:
-1. Northern valley floor alteration zones (highest HSI correlation).
+1. Northern valley floor alteration highs.
 2. Eastern fan complexes with clay signatures.
 3. Structural margins near Silver Peak Range.
 
 ## Recommendations
-- Immediate: Ground truth with portable spectrometer and soil sampling.
-- Medium-term: Shallow drilling in high-prospectivity zones identified from public data fusion.
-- Integrate any private assay data for refined targeting.
-
-**Full Data Package Available**: Mineral maps, claims overlay, and provenance log (contact for enterprise access).
+- Immediate: Ground-truth with portable spectrometer and soil sampling.
+- Medium-term: Shallow drilling in high-prospectivity zones.
+- Long-term: Integrate private data for refined modeling.
 
 ---
-*Report derived from public USGS, NBMG, and Nevada Division of Minerals data. This is a light-mode demonstration.*
+*Light-mode demonstration using public USGS, NBMG, and Nevada Division of Minerals data.*
 """
 
-        st.success("✅ Report Generated!")
-        st.markdown(report)
+        st.session_state.report = report
+        st.session_state.bbox = (min_lon, min_lat, max_lon, max_lat)
+        st.session_state.mineral = mineral
 
-        # Simple interactive map
-        st.subheader("Target Area Map")
-        m = folium.Map(location=[(min_lat + max_lat)/2, (min_lon + max_lon)/2], zoom_start=10)
-        folium.Rectangle(
-            bounds=[[min_lat, min_lon], [max_lat, max_lon]],
-            color="red",
-            fill=True,
-            fill_opacity=0.2,
-        ).add_to(m)
-        st_folium(m, width=700, height=400)
+# Display persistent report if it exists
+if st.session_state.report:
+    st.success("✅ Report Generated!")
+    st.markdown(st.session_state.report)
 
-        # Download button
-        st.download_button(
-            label="📥 Download Report as Markdown",
-            data=report,
-            file_name=f"nevada_{mineral.lower()}_clayton_valley_report.md",
-            mime="text/markdown"
-        )
+    # Map
+    st.subheader("Target Area Map")
+    m = folium.Map(location=[(st.session_state.bbox[1] + st.session_state.bbox[3])/2, 
+                             (st.session_state.bbox[0] + st.session_state.bbox[2])/2], 
+                   zoom_start=10)
+    folium.Rectangle(
+        bounds=[[st.session_state.bbox[1], st.session_state.bbox[0]], 
+                [st.session_state.bbox[3], st.session_state.bbox[2]]],
+        color="red",
+        fill=True,
+        fill_opacity=0.2,
+    ).add_to(m)
+    st_folium(m, width=700, height=400)
 
-st.info("**Light Mode Demo** — Full multi-agent factory with AVIRIS processing is next. This version runs instantly with no external APIs.")
+    # Download
+    st.download_button(
+        label="📥 Download Report as Markdown",
+        data=st.session_state.report,
+        file_name=f"nevada_{st.session_state.mineral.lower()}_clayton_valley_report.md",
+        mime="text/markdown"
+    )
+
+st.info("**Light Mode Demo** — Click the button above to generate a report. It will stay visible until you generate a new one.")
