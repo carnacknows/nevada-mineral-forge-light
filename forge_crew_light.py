@@ -1,16 +1,14 @@
 from crewai import Agent, Task, Crew
-from crewai_tools import SerperDevTool
 import os
 
 def create_light_forge_crew(bbox=None, target_mineral="Lithium"):
-    # Simple search tool (you'll need a free Serper API key for best results)
-    search_tool = SerperDevTool()
+    # No external search tool for now (to keep it lightweight)
+    # The Researcher will use its built-in knowledge + reasoning
 
     researcher = Agent(
         role="Public Data Researcher",
-        goal=f"Gather latest public data on {target_mineral} in Nevada, especially Clayton Valley and the provided bbox",
-        backstory="Expert at pulling open government data from USGS, NBMG, and Nevada Division of Minerals for mineral exploration",
-        tools=[search_tool],
+        goal=f"Gather and summarize public data on {target_mineral} in Nevada, focusing on Clayton Valley and the provided bbox",
+        backstory="Expert at recalling and synthesizing open government data from USGS, NBMG, and Nevada Division of Minerals for mineral exploration",
         verbose=True,
         allow_delegation=False,
     )
@@ -32,20 +30,20 @@ def create_light_forge_crew(bbox=None, target_mineral="Lithium"):
     )
 
     task_research = Task(
-        description=f"Search and summarize the latest public sources for {target_mineral} prospectivity in Clayton Valley / bbox {bbox or 'default Nevada lithium areas'}. Include USGS lithium data, NDOM claims, playa rankings, and key reports from 2024-2026.",
-        expected_output="Structured summary with key facts, resources, claims density, recent surveys, and links where available",
+        description=f"Provide the latest known public information for {target_mineral} prospectivity in Clayton Valley / bbox {bbox or 'default Nevada lithium areas'}. Include key USGS lithium statistics, playa rankings, NDOM claims context, and relevant 2024-2026 reports.",
+        expected_output="Structured summary with key facts, resources, claims density, recent surveys, and important context",
         agent=researcher,
     )
 
     task_geology = Task(
-        description="Analyze the research and produce a prospectivity score (0-100), strengths, risks, and specific target recommendations for the area.",
+        description="Analyze the research output and produce a realistic prospectivity score (0-100), strengths, risks, and specific target recommendations for the area.",
         expected_output="Prospectivity score, bullet-point strengths/opportunities, risk matrix, and ranked drill targets",
         agent=geologist,
     )
 
     task_report = Task(
-        description="Synthesize all outputs into a well-formatted markdown report with sections: Executive Summary, Geology, Claims & Land, Prospectivity Model, Risks, Recommendations.",
-        expected_output="Complete markdown report text ready for display or PDF conversion",
+        description="Synthesize all outputs into a well-formatted markdown report with clear sections: Executive Summary, Geology, Claims & Land, Prospectivity Model, Risks, Recommendations.",
+        expected_output="Complete, professional markdown report text ready for display",
         agent=report_forge,
     )
 
