@@ -1,49 +1,46 @@
 from crewai import Agent, Task, Crew
-import os
 
 def create_light_forge_crew(bbox=None, target_mineral="Lithium"):
-    # No external search tool for now (to keep it lightweight)
-    # The Researcher will use its built-in knowledge + reasoning
-
+    # Ultra-light agents with no external tools or LLM config that forces OpenAI
     researcher = Agent(
         role="Public Data Researcher",
-        goal=f"Gather and summarize public data on {target_mineral} in Nevada, focusing on Clayton Valley and the provided bbox",
-        backstory="Expert at recalling and synthesizing open government data from USGS, NBMG, and Nevada Division of Minerals for mineral exploration",
+        goal=f"Summarize known public information about {target_mineral} in Nevada's Clayton Valley area.",
+        backstory="Reliable synthesizer of USGS, NBMG, and Nevada Division of Minerals public data for mineral exploration.",
         verbose=True,
         allow_delegation=False,
     )
 
     geologist = Agent(
         role="Exploration Geologist",
-        goal="Synthesize public geology, prospectivity data, and claims into actionable insights and a prospectivity score",
-        backstory="Nevada specialist with deep knowledge of Clayton Valley brines, lithium clays, and Basin & Range geology",
+        goal="Turn the research into a prospectivity assessment with score, strengths, risks, and recommendations.",
+        backstory="Experienced Nevada geologist focused on lithium brines and clays in the Basin and Range.",
         verbose=True,
         allow_delegation=False,
     )
 
     report_forge = Agent(
         role="Report Forge Master",
-        goal="Create a clean, professional markdown prospectivity report with executive summary, risks, and recommendations",
-        backstory="Turns raw public data into client-ready insights suitable for PDF export",
+        goal="Produce a clean, professional markdown report.",
+        backstory="Turns technical insights into clear, client-ready summaries.",
         verbose=True,
         allow_delegation=False,
     )
 
     task_research = Task(
-        description=f"Provide the latest known public information for {target_mineral} prospectivity in Clayton Valley / bbox {bbox or 'default Nevada lithium areas'}. Include key USGS lithium statistics, playa rankings, NDOM claims context, and relevant 2024-2026 reports.",
-        expected_output="Structured summary with key facts, resources, claims density, recent surveys, and important context",
+        description=f"Provide a concise summary of public knowledge on {target_mineral} in Clayton Valley, Nevada (bbox {bbox or 'default area'}). Include key geology, resources, and recent context.",
+        expected_output="Structured bullet-point summary of facts and data points.",
         agent=researcher,
     )
 
     task_geology = Task(
-        description="Analyze the research output and produce a realistic prospectivity score (0-100), strengths, risks, and specific target recommendations for the area.",
-        expected_output="Prospectivity score, bullet-point strengths/opportunities, risk matrix, and ranked drill targets",
+        description="Create a realistic prospectivity score (0-100), list strengths/opportunities, risks, and 2-3 ranked next steps.",
+        expected_output="Score + bullet lists for strengths, risks, and recommendations.",
         agent=geologist,
     )
 
     task_report = Task(
-        description="Synthesize all outputs into a well-formatted markdown report with clear sections: Executive Summary, Geology, Claims & Land, Prospectivity Model, Risks, Recommendations.",
-        expected_output="Complete, professional markdown report text ready for display",
+        description="Combine everything into a well-structured markdown report with sections: Executive Summary, Geology, Claims & Land, Prospectivity, Risks, Recommendations.",
+        expected_output="Full professional markdown report.",
         agent=report_forge,
     )
 
@@ -51,7 +48,7 @@ def create_light_forge_crew(bbox=None, target_mineral="Lithium"):
         agents=[researcher, geologist, report_forge],
         tasks=[task_research, task_geology, task_report],
         verbose=2,
-        memory=True,
+        memory=False,   # disable memory to reduce LLM pressure
         cache=True,
     )
     return crew
