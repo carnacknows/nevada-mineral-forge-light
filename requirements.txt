@@ -1,0 +1,8 @@
+streamlit
+crewai>=0.100
+crewai-tools
+pandas
+folium
+streamlit-folium
+requests
+beautifulsoup4
