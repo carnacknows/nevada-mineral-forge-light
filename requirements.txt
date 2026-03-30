@@ -5,3 +5,11 @@ folium
 streamlit-folium
 requests
 beautifulsoup4
+# === HSI On-Demand Upgrade (added March 2026) ===
+streamlit-folium>=0.18.0
+folium>=0.14.0
+geopandas>=0.14.0
+rasterio>=1.3.0
+spectral>=0.23.0                  # Spectral Python for hyperspectral basics
+reportlab>=4.0.0                  # PDF generation with maps/images
+matplotlib>=3.8.0                 # Heatmap/image generation for reports
