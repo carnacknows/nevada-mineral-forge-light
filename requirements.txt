@@ -1,22 +1,8 @@
 streamlit
-crewai
-pandas
-folium
 streamlit-folium
-requests
-beautifulsoup4
-# === HSI On-Demand Upgrade (added March 2026) ===
-streamlit-folium>=0.18.0
-folium>=0.14.0
-geopandas>=0.14.0
-spectral>=0.23.0                  # Spectral Python for hyperspectral basics
-reportlab>=4.0.0                  # PDF generation with maps/images
-matplotlib>=3.8.0                 # Heatmap/image generation for reports
-# === HSI On-Demand Upgrade (March 2026) - Simplified for macOS ===
-streamlit-folium>=0.18.0
-folium>=0.14.0
-spectral>=0.23.0
-reportlab>=4.0.0
-matplotlib>=3.8.0
-# geopandas and rasterio skipped for now (GDAL/PROJ issues on macOS)
-# Can add later via conda if needed: conda install -c conda-forge geopandas rasterio
+leafmap
+plotly
+pandas
+fpdf2
+pillow
+folium
