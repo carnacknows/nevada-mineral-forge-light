@@ -8,8 +8,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Nevada Mineral Forge Light", layout="wide")
 
-st.title("🚀 Nevada Mineral Forge Light – Clayton Valley Lithium Intelligence")
-st.markdown("**March 2026 Demo** — Populated Claims, Land Intelligence, HSI Samples, Bibliography & All Killer Features")
+st.title("Nevada Mineral Forge Light – Clayton Valley Lithium Intelligence")
 
 page = st.sidebar.selectbox("Navigate", [
     "Overview & Expanded Report",
@@ -27,8 +26,8 @@ if page == "Overview & Expanded Report":
     **Clayton Valley, Nevada** — Closed-basin playa with lithium in brine aquifers and Esmeralda Formation claystone (Li grades commonly >600 ppm).
     
     **2026 Highlights:**
-    - Albemarle Silver Peak: Only U.S. producing lithium mine. BLM expansion approved **Feb 27, 2026** — now 8,058 acres with new tech for up to **100% higher recovery**.
-    - Century Lithium (Angel Island): Feasibility Study released Feb 2026 with **$4.01 billion** after-tax NPV(8%).
+    - Albemarle Silver Peak: Only U.S. producing lithium mine. BLM expansion approved Feb 27, 2026 — now 8,058 acres with new tech for up to 100% higher recovery.
+    - Century Lithium (Angel Island): Feasibility Study released Feb 2026 with $4.01 billion after-tax NPV(8%).
     """)
     data = pd.DataFrame({'Metric': ['Prospectivity', 'Infrastructure', 'Competition'], 'Score': [88, 92, 60]})
     fig = px.bar(data, x='Metric', y='Score', color='Score', title="Key Scores")
@@ -56,7 +55,7 @@ elif page == "Interactive GIS Map":
         icon=folium.Icon(color="red", icon="info-sign")
     ).add_to(m)
     st_folium(m, width=800, height=500)
-    st.caption("Centered on Clayton Valley / Silver Peak. Toggle base layers in full version (claims, geology, HSI overlays).")
+    st.caption("Centered on Clayton Valley / Silver Peak area.")
 
 elif page == "HSI Explorer":
     st.header("Hyperspectral Imaging (HSI) Explorer")
@@ -90,11 +89,20 @@ elif page == "Generate PDF Report":
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        pdf.multi_cell(0, 10, txt="Nevada Mineral Forge – Clayton Valley Lithium Report\n\nDate: " + datetime.now().strftime("%B %d, %Y") +
-                       "\n\nKey Sections:\n• Expanded Report with 2026 data\n• Claims & Land Intelligence\n• HSI Samples from USGS database\n\nBibliography:\n1. BLM Silver Peak Expansion Approval (Feb 27, 2026)\n2. Century Lithium Feasibility Study (Feb/Mar 2026)\n3. USGS Lithium Playa Spectral Database v2.0 (2025)\n4. Nevada Division of Minerals Lithium Claims Open Data")
+        pdf.multi_cell(0, 10, txt="Nevada Mineral Forge – Clayton Valley Lithium Report\n\n" +
+                       "Date: " + datetime.now().strftime("%B %d, %Y") + "\n\n" +
+                       "Key Sections:\n" +
+                       "• Expanded Report with 2026 data\n" +
+                       "• Claims & Land Intelligence\n" +
+                       "• HSI Samples from USGS database\n\n" +
+                       "Bibliography:\n" +
+                       "1. BLM Silver Peak Expansion Approval (Feb 27, 2026)\n" +
+                       "2. Century Lithium Feasibility Study (Feb/Mar 2026)\n" +
+                       "3. USGS Lithium Playa Spectral Database v2.0 (2025)\n" +
+                       "4. Nevada Division of Minerals Lithium Claims Open Data")
         pdf.output("Clayton_Valley_Lithium_Report.pdf")
         with open("Clayton_Valley_Lithium_Report.pdf", "rb") as f:
             st.download_button("⬇️ Download Full Report PDF", f, file_name="Clayton_Valley_Lithium_Report.pdf")
-        st.success("PDF generated with bibliography!")
+        st.success("PDF generated successfully with bibliography!")
 
-st.sidebar.success("✅ All killer features loaded — Claims, Land Intel, HSI (upgraded imagery), Map, Dashboard, Chat, PDF Export")
+st.sidebar.success("Demo features loaded — Claims, Land Intel, HSI, Map, Dashboard, Chat, PDF Export")
