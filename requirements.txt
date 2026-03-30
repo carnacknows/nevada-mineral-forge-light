@@ -1,8 +1,7 @@
 streamlit
+folium
 streamlit-folium
-leafmap
 plotly
 pandas
 fpdf2
 pillow
-folium
